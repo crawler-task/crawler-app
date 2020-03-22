@@ -18,7 +18,7 @@ class ContentRetrievalCrawler4JClient implements ContentRetrievalClient {
     public RetrievalProcessResult retrieve(URL url)  {
         CrawlController crawlController = CrawlControllerCreator.crawlController();
         crawlController.addSeed(url.toString());
-        RetrievalProcessResult retrievalProcessResult = new RetrievalProcessResult();
+        RetrievalProcessResult retrievalProcessResult = new RetrievalProcessResult(url);
         CrawlController.WebCrawlerFactory<HtmlCrawler> factory = () -> new HtmlCrawler(retrievalProcessResult, url);
         crawlController.start(factory, NUMBER_OF_CONCURRENCY_CRAWLERS);
         return retrievalProcessResult;

@@ -1,16 +1,20 @@
 package com.wiprodigital.crawler.infrastructure;
 
-import com.wiprodigital.crawler.domain.RetrievalProcessResult;
 import com.wiprodigital.crawler.domain.FileExtension;
+import com.wiprodigital.crawler.domain.RetrievalProcessResult;
 import com.wiprodigital.crawler.domain.UnmodifiedWebsiteContent;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.crawler.WebCrawler;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import edu.uci.ics.crawler4j.url.WebURL;
+import lombok.extern.slf4j.Slf4j;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+@Slf4j
 class HtmlCrawler extends WebCrawler {
 
     private final RetrievalProcessResult retrievalProcessResult;
@@ -31,12 +35,24 @@ class HtmlCrawler extends WebCrawler {
     @Override
     public void visit(Page page) {
         String pageUrl = page.getWebURL().getURL();
-        UnmodifiedWebsiteContent unmodifiedWebsiteContent = new UnmodifiedWebsiteContent(pageUrl);
-        if (page.getParseData() instanceof HtmlParseData) {
-            HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
-            Set<WebURL> links = htmlParseData.getOutgoingUrls();
-            unmodifiedWebsiteContent.addAll(links);
+        try {
+            UnmodifiedWebsiteContent unmodifiedWebsiteContent = new UnmodifiedWebsiteContent(new URL(pageUrl));
+            if (page.getParseData() instanceof HtmlParseData) {
+                HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
+                Set<WebURL> links = htmlParseData.getOutgoingUrls();
+                unmodifiedWebsiteContent.addAllNestedUrlsByVerificationUrl(WebUrlMapper.mapToStringRepresentation(links));
+            }
+            retrievalProcessResult.add(unmodifiedWebsiteContent);
+        } catch (MalformedURLException e) {
+            log.warn("Cannot create result of found url [URL = {}]", pageUrl, e);
         }
-        retrievalProcessResult.add(unmodifiedWebsiteContent);
+    }
+
+    private static class WebUrlMapper {
+        static Set<String> mapToStringRepresentation(Set<WebURL> webURLS) {
+            return webURLS.stream()
+                    .map(WebURL::getURL)
+                    .collect(Collectors.toUnmodifiableSet());
+        }
     }
 }
