@@ -1,6 +1,6 @@
 package com.wiprodigital.crawler.domain
 
-import edu.uci.ics.crawler4j.url.WebURL
+
 import spock.lang.Specification
 
 class ContentParserCommandTest extends Specification {
@@ -36,17 +36,11 @@ class ContentParserCommandTest extends Specification {
     UnmodifiedWebsiteContent createUnmodifiedWebsiteContent(URL url) {
         def content = new UnmodifiedWebsiteContent(url);
         content.addAllNestedUrlsByVerificationUrl(
-                Arrays.asList(createWebURL("http://www.test.pl/w.js"),
-                        createWebURL("http://www.test.pl/plot"),
-                        createWebURL("http://www.234234324.pl/plot"),
-                        createWebURL("http://www.test.pl/lot")))
+                Arrays.asList("http://www.test.pl/w.js",
+                        "http://www.test.pl/plot",
+                        "http://www.234234324.pl/plot",
+                        "http://www.test.pl/lot"))
         return content;
-    }
-
-    WebURL createWebURL(String url) {
-        def webURL = new WebURL()
-        webURL.setURL(url)
-        return webURL
     }
 
 }
