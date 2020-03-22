@@ -1,5 +1,6 @@
 package com.wiprodigital.crawler.infrastructure;
 
+import com.wiprodigital.crawler.infrastructure.exception.CrawlControllerCreatorException;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -23,8 +24,7 @@ class CrawlControllerCreator {
         try {
             return new CrawlController(config, pageFetcher, robotstxtServer);
         } catch (Exception ex) {
-            //TODO LL-9 change to business exception
-            throw new IllegalArgumentException("Cannot create CrawlController ", ex);
+            throw CrawlControllerCreatorException.cannotCreateController(config);
         }
     }
 
