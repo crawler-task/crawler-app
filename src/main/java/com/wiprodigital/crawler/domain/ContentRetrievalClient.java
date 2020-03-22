@@ -4,5 +4,5 @@ import java.net.URL;
 
 public interface ContentRetrievalClient {
 
-    RetrievalProcessResult retrieve(URL url);
+    RetrievalProcessResult retrieve(URL url, Integer maxNestedCrawling);
 }

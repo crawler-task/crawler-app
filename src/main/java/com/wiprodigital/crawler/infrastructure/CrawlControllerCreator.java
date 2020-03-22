@@ -10,22 +10,27 @@ import java.io.File;
 
 class CrawlControllerCreator {
 
-    private static final int WITHOUT_NESTED_WEBSITE = 0;
     private static final String PROCESSING_STORAGE_PATH = "target/crawler4j";
 
-    static CrawlController crawlController(){
+    static CrawlController crawlController(Integer maxNestedCrawling) {
         File crawlStorage = new File(PROCESSING_STORAGE_PATH);
         CrawlConfig config = new CrawlConfig();
         config.setCrawlStorageFolder(crawlStorage.getAbsolutePath());
-        config.setMaxDepthOfCrawling(WITHOUT_NESTED_WEBSITE);
+        setSearchingNestedWebsite(config, maxNestedCrawling);
         PageFetcher pageFetcher = new PageFetcher(config);
         RobotstxtConfig robotstxtConfig = new RobotstxtConfig();
         RobotstxtServer robotstxtServer = new RobotstxtServer(robotstxtConfig, pageFetcher);
-        try{
+        try {
             return new CrawlController(config, pageFetcher, robotstxtServer);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             //TODO LL-9 change to business exception
             throw new IllegalArgumentException("Cannot create CrawlController ", ex);
+        }
+    }
+
+    private static void setSearchingNestedWebsite(CrawlConfig config, Integer maxDepthOfCrawling) {
+        if (maxDepthOfCrawling != null) {
+            config.setMaxDepthOfCrawling(maxDepthOfCrawling);
         }
     }
 }
